@@ -8,12 +8,8 @@ import { toISODate } from '../../utils/date'
 import CustomSelect from '../ui/CustomSelect'
 
 const schema = z.object({
-  building: z.enum(['A', 'B', 'C', 'D1', 'D2', 'E1', 'E2', 'V'], {
-    required_error: 'Vui lòng chọn tòa nhà',
-  }),
-  floor: z.coerce.number({ invalid_type_error: 'Vui lòng nhập số tầng' })
-    .min(1, 'Tầng tối thiểu là 1')
-    .max(15, 'Tầng tối đa là 15'),
+  building: z.enum(['A', 'B', 'C', 'D1', 'D2', 'E1', 'E2', 'V']),
+  floor: z.number({ invalid_type_error: 'Vui lòng nhập số tầng' }).min(1, 'Tầng tối thiểu là 1').max(15, 'Tầng tối đa là 15'),
   roomNumber: z.string().min(1, 'Vui lòng nhập số phòng').max(20),
   surveyDate: z.string().min(1, 'Vui lòng chọn ngày'),
 })
@@ -24,9 +20,6 @@ interface Step1InfoProps {
   defaultValues?: Partial<SurveyStep1>
   onNext: (data: SurveyStep1) => void
 }
-
-const KHU_K = BUILDINGS.filter((b) => b.campus === 'K')
-const KHU_V = BUILDINGS.filter((b) => b.campus === 'V')
 
 export default function Step1Info({ defaultValues, onNext }: Step1InfoProps) {
   const {
@@ -44,8 +37,12 @@ export default function Step1Info({ defaultValues, onNext }: Step1InfoProps) {
     },
   })
 
+  const onSubmit = (data: FormData) => {
+    onNext(data as SurveyStep1)
+  }
+
   return (
-    <form onSubmit={handleSubmit(onNext)} noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
 
         <div>
@@ -93,7 +90,7 @@ export default function Step1Info({ defaultValues, onNext }: Step1InfoProps) {
                 min={1} max={15}
                 className={`form-input ${errors.floor ? 'form-input--error' : ''}`}
                 placeholder="1"
-                {...register('floor')}
+                {...register('floor', { valueAsNumber: true })}
               />
               {errors.floor && (
                 <span className="form-error"><AlertCircle size={12} />{errors.floor.message}</span>

@@ -4,11 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ChevronRight, ChevronLeft, Camera, X } from 'lucide-react'
 import { ROOM_TYPES } from '../../types'
-import type { SurveyStep2, EquipmentCondition, RoomType } from '../../types'
+import type { SurveyStep2, EquipmentCondition } from '../../types'
 
 const schema = z.object({
   roomType: z.enum(['theory', 'lab', 'auditorium', 'meeting']),
-  capacity: z.coerce.number().min(1, 'Sức chứa phải lớn hơn 0').max(500),
+  capacity: z.number({ invalid_type_error: 'Vui lòng nhập số' }).min(1, 'Sức chứa phải lớn hơn 0').max(500),
   overallRating: z.number().min(1, 'Vui lòng đánh giá').max(5),
   airConditioner: z.enum(['good', 'needs_repair', 'broken']),
   projector: z.enum(['good', 'needs_repair', 'broken']),
@@ -243,7 +243,7 @@ export default function Step2Room({ defaultValues, onNext, onBack }: Step2RoomPr
               min={1}
               max={500}
               className={`form-input ${errors.capacity ? 'form-input--error' : ''}`}
-              {...register('capacity')}
+              {...register('capacity', { valueAsNumber: true })}
             />
             {errors.capacity && (
               <span className="form-error">{errors.capacity.message}</span>

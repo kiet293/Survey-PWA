@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Plus, ClipboardCheck, Clock, AlertTriangle, RefreshCw, ChevronRight } from 'lucide-react'
+import { Plus, ClipboardCheck, AlertTriangle, RefreshCw, ChevronRight } from 'lucide-react'
 import { useSurveyStore } from '../store/surveyStore'
 import { useAuthStore } from '../store/authStore'
 import { BUILDINGS, PRIORITY_OPTIONS } from '../types'

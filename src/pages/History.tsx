@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Filter, ChevronRight, RefreshCw, AlertTriangle, ClipboardList } from 'lucide-react'
+import { Search, ChevronRight, RefreshCw, AlertTriangle, ClipboardList } from 'lucide-react'
 import { useSurveyStore } from '../store/surveyStore'
 import { BUILDINGS, PRIORITY_OPTIONS } from '../types'
-import type { Survey, Building, Priority } from '../types'
+import type { Building, Priority } from '../types'
 import { format } from '../utils/date'
 
 function getPriorityBadgeClass(priority: string) {

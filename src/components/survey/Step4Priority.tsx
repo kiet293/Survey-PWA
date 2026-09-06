@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ChevronLeft, Send, AlertTriangle, Check } from 'lucide-react'
+import { ChevronLeft, Send } from 'lucide-react'
 import { PRIORITY_OPTIONS, BUILDINGS, ROOM_TYPES } from '../../types'
 import type { SurveyStep1, SurveyStep2, SurveyStep3, SurveyStep4, Priority } from '../../types'
 
@@ -54,10 +53,6 @@ export default function Step4Priority({ step1, step2, step3, onSubmit, onBack }:
 
   const buildingLabel = BUILDINGS.find((b) => b.value === step1.building)?.label ?? step1.building
   const roomTypeLabel = ROOM_TYPES.find((r) => r.value === step2.roomType)?.label ?? step2.roomType
-
-  const conditionLabels: Record<string, string> = {
-    good: 'Tốt', needs_repair: 'Cần sửa', broken: 'Hỏng'
-  }
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} noValidate>

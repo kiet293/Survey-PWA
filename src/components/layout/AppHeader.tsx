@@ -4,13 +4,11 @@ import { useAuthStore } from '../../store/authStore'
 import { useOnlineStatus } from '../../hooks/useOnlineStatus'
 import { useSurveyStore } from '../../store/surveyStore'
 
-interface AppHeaderProps {
-  showNav?: boolean
-}
+interface AppHeaderProps {}
 
-export default function AppHeader({ showNav = true }: AppHeaderProps) {
+export default function AppHeader(_props: AppHeaderProps) {
   const navigate = useNavigate()
-  const { user, logout } = useAuthStore()
+  const { logout } = useAuthStore()
   const isOnline = useOnlineStatus()
   const pendingCount = useSurveyStore((s) => s.pendingCount)
 

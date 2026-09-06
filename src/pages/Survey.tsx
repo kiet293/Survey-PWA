@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Check } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useSurveyStore } from '../store/surveyStore'
 import type { Survey, SurveyStep1, SurveyStep2, SurveyStep3, SurveyStep4 } from '../types'
-import { toISODate } from '../utils/date'
+
 import StepIndicator from '../components/survey/StepIndicator'
 import Step1Info from '../components/survey/Step1Info'
 import Step2Room from '../components/survey/Step2Room'

@@ -5,7 +5,7 @@ import {
 } from 'recharts'
 import { ClipboardList, AlertTriangle, Clock, CheckCircle2 } from 'lucide-react'
 import { useSurveyStore } from '../store/surveyStore'
-import { BUILDINGS, PRIORITY_OPTIONS } from '../types'
+import { BUILDINGS } from '../types'
 
 const COLORS = {
   urgent: '#ef4444',

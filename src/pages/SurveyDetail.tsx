@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { ArrowLeft, Trash2, RefreshCw, MapPin, Star, Camera } from 'lucide-react'
+import { ArrowLeft, Trash2, RefreshCw, Camera } from 'lucide-react'
 import { getSurveyById, deleteSurvey } from '../db/db'
 import { useSurveyStore } from '../store/surveyStore'
 import { BUILDINGS, PRIORITY_OPTIONS, ROOM_TYPES } from '../types'
