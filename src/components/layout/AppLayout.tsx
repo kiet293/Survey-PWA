@@ -33,7 +33,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="app-layout">
-      <AppHeader showNav={showNav} />
+      <AppHeader />
       {!isOnline && <OfflineBanner />}
       <main
         className={`page-content${showNav ? '' : ' page-content--no-nav'}`}

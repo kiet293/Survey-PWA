@@ -8,7 +8,7 @@ import type { SurveyStep2, EquipmentCondition } from '../../types'
 
 const schema = z.object({
   roomType: z.enum(['theory', 'lab', 'auditorium', 'meeting']),
-  capacity: z.number({ invalid_type_error: 'Vui lòng nhập số' }).min(1, 'Sức chứa phải lớn hơn 0').max(500),
+  capacity: z.number().min(1, 'Sức chứa phải lớn hơn 0').max(500),
   overallRating: z.number().min(1, 'Vui lòng đánh giá').max(5),
   airConditioner: z.enum(['good', 'needs_repair', 'broken']),
   projector: z.enum(['good', 'needs_repair', 'broken']),

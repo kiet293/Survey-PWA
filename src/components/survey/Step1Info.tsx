@@ -9,7 +9,7 @@ import CustomSelect from '../ui/CustomSelect'
 
 const schema = z.object({
   building: z.enum(['A', 'B', 'C', 'D1', 'D2', 'E1', 'E2', 'V']),
-  floor: z.number({ invalid_type_error: 'Vui lòng nhập số tầng' }).min(1, 'Tầng tối thiểu là 1').max(15, 'Tầng tối đa là 15'),
+  floor: z.number().min(1, 'Tầng tối thiểu là 1').max(15, 'Tầng tối đa là 15'),
   roomNumber: z.string().min(1, 'Vui lòng nhập số phòng').max(20),
   surveyDate: z.string().min(1, 'Vui lòng chọn ngày'),
 })
