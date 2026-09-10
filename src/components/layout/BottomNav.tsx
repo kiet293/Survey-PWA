@@ -14,7 +14,7 @@ export default function BottomNav() {
         right: 0,
         maxWidth: 'var(--max-width)',
         margin: '0 auto',
-        height: 'var(--bottom-nav-h)',
+        height: 'calc(var(--bottom-nav-h) + env(safe-area-inset-bottom))',
         background: 'rgba(10, 22, 40, 0.95)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',

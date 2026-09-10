@@ -37,7 +37,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       {!isOnline && <OfflineBanner />}
       <main
         className={`page-content${showNav ? '' : ' page-content--no-nav'}`}
-        style={{ paddingTop: !isOnline ? `calc(var(--header-height) + 38px + var(--content-padding))` : undefined }}
+        style={{ paddingTop: !isOnline ? `calc(var(--header-height) + env(safe-area-inset-top) + 38px + var(--content-padding))` : undefined }}
       >
         {children}
       </main>
