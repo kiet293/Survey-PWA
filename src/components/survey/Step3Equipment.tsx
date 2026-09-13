@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react'
-import { Plus, Trash2, Camera, X, ChevronRight, ChevronLeft, AlertTriangle } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, Trash2, Camera as CameraIcon, X, ChevronRight, ChevronLeft, AlertTriangle } from 'lucide-react'
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import type { SurveyStep3, BrokenEquipment, EquipmentCondition } from '../../types'
 
 const SEVERITY_OPTIONS: { value: EquipmentCondition; label: string; color: string }[] = [
@@ -21,7 +22,6 @@ export default function Step3Equipment({ defaultValues, onNext, onBack }: Step3E
   const [items, setItems] = useState<BrokenEquipment[]>(
     defaultValues?.brokenEquipment ?? []
   )
-  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
   const addItem = () => {
     const newItem: BrokenEquipment = {
@@ -42,24 +42,24 @@ export default function Step3Equipment({ defaultValues, onNext, onBack }: Step3E
     setItems((prev) => prev.map((i) => i.id === id ? { ...i, ...updates } : i))
   }
 
-  const addPhoto = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files) return
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader()
-      reader.onload = (ev) => {
-        const base64 = ev.target?.result as string
-        setItems((prev) =>
-          prev.map((i) =>
-            i.id === id
-              ? { ...i, photos: [...(i.photos ?? []), base64] }
-              : i
-          )
+  const takePhoto = async (id: string) => {
+    try {
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Camera,
+        quality: 80,
+      })
+      const base64 = `data:image/${photo.format};base64,${photo.base64String}`
+      setItems((prev) =>
+        prev.map((i) =>
+          i.id === id
+            ? { ...i, photos: [...(i.photos ?? []), base64] }
+            : i
         )
-      }
-      reader.readAsDataURL(file)
-    })
-    e.target.value = ''
+      )
+    } catch (error) {
+      console.error('User cancelled photo or error occurred', error)
+    }
   }
 
   const removePhoto = (itemId: string, photoIdx: number) => {
@@ -192,22 +192,13 @@ export default function Step3Equipment({ defaultValues, onNext, onBack }: Step3E
                     type="button"
                     className="photo-add-btn"
                     id={`eq-photo-${item.id}`}
-                    onClick={() => fileInputRefs.current[item.id]?.click()}
+                    onClick={() => takePhoto(item.id)}
                   >
-                    <Camera size={16} />
+                    <CameraIcon size={16} />
                     <span>Chụp ảnh</span>
                   </button>
                 )}
               </div>
-              <input
-                ref={(el) => { fileInputRefs.current[item.id] = el }}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                multiple
-                style={{ display: 'none' }}
-                onChange={(e) => addPhoto(item.id, e)}
-              />
             </div>
           </div>
         ))}

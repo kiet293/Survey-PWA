@@ -1,7 +1,9 @@
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { AlertCircle, ChevronRight } from 'lucide-react'
+import { AlertCircle, ChevronRight, MapPin } from 'lucide-react'
+import { Geolocation } from '@capacitor/geolocation'
+import { useState } from 'react'
 import { BUILDINGS } from '../../types'
 import type { SurveyStep1 } from '../../types'
 import { toISODate } from '../../utils/date'
@@ -12,6 +14,7 @@ const schema = z.object({
   floor: z.number().min(1, 'Tầng tối thiểu là 1').max(15, 'Tầng tối đa là 15'),
   roomNumber: z.string().min(1, 'Vui lòng nhập số phòng').max(20),
   surveyDate: z.string().min(1, 'Vui lòng chọn ngày'),
+  location: z.object({ lat: z.number(), lng: z.number() }).optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -26,6 +29,8 @@ export default function Step1Info({ defaultValues, onNext }: Step1InfoProps) {
     register,
     handleSubmit,
     control,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -34,8 +39,12 @@ export default function Step1Info({ defaultValues, onNext }: Step1InfoProps) {
       floor: defaultValues?.floor ?? 1,
       roomNumber: defaultValues?.roomNumber ?? '',
       surveyDate: defaultValues?.surveyDate ?? toISODate(new Date()),
+      location: defaultValues?.location,
     },
   })
+
+  const [isLocating, setIsLocating] = useState(false)
+  const [locError, setLocError] = useState<string | null>(null)
 
   const onSubmit = (data: FormData) => {
     onNext(data as SurveyStep1)
@@ -123,6 +132,45 @@ export default function Step1Info({ defaultValues, onNext }: Step1InfoProps) {
             />
             {errors.surveyDate && (
               <span className="form-error"><AlertCircle size={12} />{errors.surveyDate.message}</span>
+            )}
+          </div>
+
+          {/* Location */}
+          <div className="form-group">
+            <label className="form-label">Tọa độ (Không bắt buộc)</label>
+            <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsLocating(true)
+                  setLocError(null)
+                  try {
+                    const position = await Geolocation.getCurrentPosition()
+                    setValue('location', {
+                      lat: position.coords.latitude,
+                      lng: position.coords.longitude,
+                    })
+                  } catch (e: any) {
+                    setLocError('Không thể lấy tọa độ GPS.')
+                  } finally {
+                    setIsLocating(false)
+                  }
+                }}
+                disabled={isLocating}
+                className="btn btn--secondary"
+                style={{ flex: 1 }}
+              >
+                <MapPin size={16} />
+                {isLocating ? 'Đang lấy...' : watch('location') ? 'Cập nhật lại tọa độ' : 'Lấy tọa độ hiện tại'}
+              </button>
+            </div>
+            {watch('location') && !locError && (
+              <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-success)', marginTop: 4 }}>
+                ✓ Đã lấy: {watch('location')?.lat.toFixed(5)}, {watch('location')?.lng.toFixed(5)}
+              </p>
+            )}
+            {locError && (
+              <span className="form-error" style={{ marginTop: 4 }}><AlertCircle size={12} />{locError}</span>
             )}
           </div>
         </div>

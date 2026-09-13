@@ -25,6 +25,7 @@ interface SurveyState {
   saveDraftState: (draft: SurveyDraft) => Promise<void>;
   loadDraft: () => Promise<void>;
   clearDraft: () => Promise<void>;
+  syncPendingSurveys: () => Promise<number>;
 }
 
 export const useSurveyStore = create<SurveyState>((set, get) => ({
@@ -66,5 +67,22 @@ export const useSurveyStore = create<SurveyState>((set, get) => ({
       await deleteDraft(draft.id);
     }
     set({ draft: null });
+  },
+
+  syncPendingSurveys: async () => {
+    const { surveys, loadSurveys } = get();
+    const pending = surveys.filter(s => s.syncStatus === 'pending');
+    if (pending.length === 0) return 0;
+
+    // Simulate network sync delay
+    await new Promise(r => setTimeout(r, 1000));
+
+    // Update DB
+    for (const s of pending) {
+      await saveSurvey({ ...s, syncStatus: 'synced' });
+    }
+
+    await loadSurveys();
+    return pending.length;
   },
 }));

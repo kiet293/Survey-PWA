@@ -6,6 +6,7 @@ import AppHeader from './AppHeader'
 import BottomNav from './BottomNav'
 import OfflineBanner from './OfflineBanner'
 import { useEffect } from 'react'
+import { LocalNotifications } from '@capacitor/local-notifications'
 
 export const NAV_ITEMS = [
   { path: '/', label: 'Trang chủ', icon: Home },
@@ -21,7 +22,7 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   const isOnline = useOnlineStatus()
   const location = useLocation()
-  const { loadSurveys } = useSurveyStore()
+  const { loadSurveys, syncPendingSurveys } = useSurveyStore()
 
   // Hide bottom nav on survey form page (full-screen form)
   const hiddenNavPaths = ['/survey']
@@ -30,6 +31,29 @@ export default function AppLayout({ children }: AppLayoutProps) {
   useEffect(() => {
     loadSurveys()
   }, [loadSurveys])
+
+  useEffect(() => {
+    if (isOnline) {
+      syncPendingSurveys().then(async (count) => {
+        if (count > 0) {
+          try {
+            await LocalNotifications.requestPermissions()
+            await LocalNotifications.schedule({
+              notifications: [
+                {
+                  id: Date.now(),
+                  title: 'Đồng bộ thành công',
+                  body: `Đã đồng bộ ${count} báo cáo lên hệ thống.`,
+                },
+              ],
+            })
+          } catch (error) {
+            console.error('Notification permission/schedule error:', error)
+          }
+        }
+      })
+    }
+  }, [isOnline, syncPendingSurveys])
 
   return (
     <div className="app-layout">

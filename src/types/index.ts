@@ -64,6 +64,7 @@ export interface SurveyStep1 {
   floor: number;
   roomNumber: string;
   surveyDate: string; // ISO date string
+  location?: { lat: number; lng: number }; // GPS Coordinates
 }
 
 export interface SurveyStep2 {

@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ChevronRight, ChevronLeft, Camera, X } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Camera as CameraIcon, X } from 'lucide-react'
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { ROOM_TYPES } from '../../types'
 import type { SurveyStep2, EquipmentCondition } from '../../types'
 
@@ -145,7 +146,6 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
 }
 
 export default function Step2Room({ defaultValues, onNext, onBack }: Step2RoomProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [photos, setPhotos] = useState<string[]>(defaultValues?.photos ?? [])
 
   const {
@@ -169,22 +169,22 @@ export default function Step2Room({ defaultValues, onNext, onBack }: Step2RoomPr
     },
   })
 
-  const handlePhotoCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files) return
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader()
-      reader.onload = (ev) => {
-        const base64 = ev.target?.result as string
-        setPhotos((prev) => {
-          const next = [...prev, base64]
-          setValue('photos', next)
-          return next
-        })
-      }
-      reader.readAsDataURL(file)
-    })
-    e.target.value = ''
+  const takePhoto = async () => {
+    try {
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Camera,
+        quality: 80,
+      })
+      const base64 = `data:image/${photo.format};base64,${photo.base64String}`
+      setPhotos((prev) => {
+        const next = [...prev, base64]
+        setValue('photos', next)
+        return next
+      })
+    } catch (error) {
+      console.error('User cancelled photo or error occurred', error)
+    }
   }
 
   const removePhoto = (idx: number) => {
@@ -328,22 +328,13 @@ export default function Step2Room({ defaultValues, onNext, onBack }: Step2RoomPr
                 type="button"
                 className="photo-add-btn"
                 id="step2-add-photo"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={takePhoto}
               >
-                <Camera size={20} />
+                <CameraIcon size={20} />
                 <span>Thêm ảnh</span>
               </button>
             )}
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            multiple
-            style={{ display: 'none' }}
-            onChange={handlePhotoCapture}
-          />
         </div>
 
         {/* Navigation */}
